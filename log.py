@@ -1,17 +1,16 @@
-
 import time
-
 import requests
+
 import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 url = 'https://localhost:8080/data.json'
-lat = [1]
-lon = [1]
-alt = [1]
-tim = [1]
+lat = []
+lon = []
+alt = []
+tim = []
 
 def genParquet():
     df = pd.DataFrame({'lat': lat,
