@@ -1,7 +1,6 @@
 import time
 import requests
 import json
-import urllib.request
 
 import numpy as np
 import pandas as pd
@@ -29,14 +28,16 @@ try:
         try:
             raw = requests.get(url, timeout=10, verify=False)
             data = raw.json()
-            print(data)
 
             for x in data:
-                if x.flight:
-                    lat.append(x.lat)
-                    lon.append(x.lon)
-                    alt.append(x.altitude)
+                print(x)
+                if x.get('lat') != 0 and x.get('lon') != 0:
+                    lat.append(x.get('lat'))
+                    lon.append(x.get('lon'))
+                    alt.append(x.get('altitude'))
                     tim.append(int(time.time()))
+            
+            genParquet()
         except requests.exceptions.RequestException as e:
             genParquet()
             raise SystemExit(e)
