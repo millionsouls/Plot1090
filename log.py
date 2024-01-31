@@ -1,12 +1,14 @@
 import time
 import requests
+import json
+import urllib.request
 
 import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-url = 'https://localhost:8080/data.json'
+url = "http://localhost:8080/data.json"
 lat = []
 lon = []
 alt = []
@@ -22,21 +24,24 @@ def genParquet():
     pq.write_table(table, './data.parquet')
 
 
-while True:
-    try:
-        raw = requests.get(url)
-        raw.raise_for_status
+try: 
+    while True:
+        try:
+            raw = requests.get(url, timeout=10, verify=False)
+            data = raw.json()
+            print(data)
 
-        data = raw.json()
-
-        for x in data:
-            if x.flight:
-                lat.append(x.lat)
-                lon.append(x.lon)
-                alt.append(x.altitude)
-                tim.append(int(time.time()))
-    except requests.exceptions.RequestException as e:
-        genParquet()
-        raise SystemExit(e)
-    
-    time.sleep(1)
+            for x in data:
+                if x.flight:
+                    lat.append(x.lat)
+                    lon.append(x.lon)
+                    alt.append(x.altitude)
+                    tim.append(int(time.time()))
+        except requests.exceptions.RequestException as e:
+            genParquet()
+            raise SystemExit(e)
+        
+        time.sleep(1)
+except KeyboardInterrupt:
+    genParquet()
+    print("terminated")
